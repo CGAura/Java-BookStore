@@ -4,10 +4,6 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.sql.Connection;
-import java.sql.DatabaseMetaData;
-import java.sql.DriverManager;
-
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -28,11 +24,13 @@ public class ControllerServlet extends HttpServlet {
      * @see HttpServlet#HttpServlet()
      */
 
-    public void init() {
+    @Override
+	public void init() {
 			dbConnection = new DBConnection();
 			bookDAO = new BookDAO(dbConnection.getConnection());
     }
 
+		@Override
 		public void destroy() {
 			dbConnection.disconnect();
 		}
@@ -44,6 +42,7 @@ public class ControllerServlet extends HttpServlet {
 	/**
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
+	@Override
 	public void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException  {
 		String action = request.getPathInfo();
@@ -51,17 +50,20 @@ public class ControllerServlet extends HttpServlet {
 		try {
 			switch(action) {
 				case "/admin":
-					 showBookAdmin(request, response);
-           break;
-			  case "/new":
+					showBookAdmin(request, response);
+					break;
+				case "/new":
 					showNewForm(request, response);
-          break;
+					break;
 				case "/insert":
 					insertBook(request, response);
-          break;
-        default:
+					break;
+				case "/delete":
+					deleteBook(request, response);
+					break;
+				default:
 				   listBooks(request, response);
-           break;
+				   break;
 			}
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
@@ -108,12 +110,19 @@ public class ControllerServlet extends HttpServlet {
 	/**
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
 	 */
+	@Override
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// TODO Auto-generated method stub
 		PrintWriter out = response.getWriter();
 		out.println("This is the doPost() method!");
 		doGet(request, response);
 
+	}
+	
+	private void deleteBook(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException{
+		int id = Integer.parseInt(request.getParameter("id"));
+		bookDAO.deleteBook(id);
+		response.sendRedirect("list");
 	}
 
 }

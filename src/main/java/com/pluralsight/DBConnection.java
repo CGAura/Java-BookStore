@@ -22,7 +22,7 @@ public class DBConnection {
     try {
       Class.forName("org.sqlite.JDBC");
       jdbcConnection = DriverManager.getConnection("jdbc:sqlite:book_store.db");
-      System.out.println("Opened database successfully");
+      System.out.println("Opened database successfully2");
 
       createTableIfNotExists();
     } catch ( Exception e ) {
